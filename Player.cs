@@ -52,7 +52,13 @@ public class Player : MonoBehaviour
         //przenieslismy w E10(variable height jump) zeby meic wartosci po poruszeniu postaci
         if (controller.collisions.above || controller.collisions.below)
         {
-            velocity.y = 0;
+            if (controller.collisions.slidingDownMaxSlope)
+            {
+                velocity.y += controller.collisions.slopeNormal.y * -gravity * Time.deltaTime;
+            }else
+            {
+                velocity.y = 0;
+            }
         }
     }
 
@@ -87,7 +93,18 @@ public class Player : MonoBehaviour
         }
         if (controller.collisions.below)
         {
-            velocity.y = maxJumpvelocity;
+            if (controller.collisions.slidingDownMaxSlope)
+            {
+                //tutaj robimy handle of jumping from and to maxSlide slopes
+                if(directionalInput.x != -Mathf.Sign(controller.collisions.slopeNormal.x)) //not jumping against max slope
+                {
+                    velocity.y = maxJumpvelocity * controller.collisions.slopeNormal.y;
+                    velocity.x = maxJumpvelocity * controller.collisions.slopeNormal.x;
+                }
+            }else
+            {
+                velocity.y = maxJumpvelocity;
+            }
         }
     }
 
